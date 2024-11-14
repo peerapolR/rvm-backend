@@ -159,7 +159,7 @@ exports.deleteFormula = async (req, res, next) => {
 exports.updateFormula = async (req, res, next) => {
   try {
     const {
-      id,
+      _id,
       formula_name,
       formula_type,
       formulation,
@@ -170,7 +170,7 @@ exports.updateFormula = async (req, res, next) => {
       formula_status,
     } = req.body;
 
-    const existFormula = await Formula.findOne({ _id: id });
+    const existFormula = await Formula.findOne({ _id: _id });
     if (!existFormula) {
       const error = new Error("Formula not found");
       error.statusCode = 404;
@@ -178,7 +178,7 @@ exports.updateFormula = async (req, res, next) => {
     }
 
     const editFormula = await Formula.updateOne(
-      { _id: id },
+      { _id: _id },
       {
         formula_name,
         formula_type,
@@ -193,7 +193,7 @@ exports.updateFormula = async (req, res, next) => {
     if (editFormula.nModified === 0) {
       throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
     } else {
-      res.status(200).json({
+      return res.status(200).json({
         ...responseMessage.success,
         data: "Formula updated",
       });

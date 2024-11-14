@@ -14,15 +14,16 @@ router.post(
     body("firstName").not().isEmpty().withMessage("required first name"),
     body("lastName").not().isEmpty().withMessage("required last name"),
     body("role")
-      .isIn(["doctor", "nurse", "super admin"])
-      .withMessage("Please use doctor or nurse"),
+      .isIn(["sale", "sale manager", "p&d", "admin"])
+      .withMessage("Role Fail!"),
     // body("email").isEmail().normalizeEmail(),
   ],
   userController.register
 );
 router.post("/login", userController.login);
 router.put("/update/:id", userController.update);
-// router.get("/me", [passportJWT.isLogin], userController.me);
+router.get("/me", [passportJWT.isLogin], userController.me);
+
 // router.get("/profile", [passportJWT.isLogin], userController.profile);
 
 module.exports = router;

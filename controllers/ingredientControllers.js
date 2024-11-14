@@ -71,7 +71,7 @@ exports.addIngredient = async (req, res, next) => {
 exports.updateIngredient = async (req, res, next) => {
   try {
     const {
-      id,
+      _id,
       ingredient_name,
       dose_min,
       dose_max,
@@ -90,7 +90,7 @@ exports.updateIngredient = async (req, res, next) => {
       ingredient_status,
     } = req.body;
 
-    const existIngredient = await Ingredient.findOne({ _id: id });
+    const existIngredient = await Ingredient.findOne({ _id: _id });
     if (!existIngredient) {
       const error = new Error("Ingredient not found");
       error.statusCode = 404;
@@ -98,7 +98,7 @@ exports.updateIngredient = async (req, res, next) => {
     }
 
     const editIngredient = await Ingredient.updateOne(
-      { _id: id },
+      { _id: _id },
       {
         ingredient_name,
         dose_min,
@@ -121,7 +121,7 @@ exports.updateIngredient = async (req, res, next) => {
     if (editIngredient.nModified === 0) {
       throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
     } else {
-      res.status(200).json({
+      return res.status(200).json({
         ...responseMessage.success,
         data: "Ingredient updated",
       });
@@ -182,10 +182,10 @@ exports.deleteIngredient = async (req, res, next) => {
 
 exports.publishUpdate = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { _id } = req.params;
     const today = new Date();
 
-    const ingredient = await Ingredient.findOne().where("_id").eq(id);
+    const ingredient = await Ingredient.findOne().where("_id").eq(_id);
     if (!ingredient) {
       const error = new Error("ไม่พบ Ingredient");
       error.statusCode = 404;
@@ -194,7 +194,7 @@ exports.publishUpdate = async (req, res, next) => {
     let update;
     if (ingredient.ingredient_status === "draft") {
       update = await Ingredient.updateOne(
-        { _id: id },
+        { _id: _id },
         {
           ingredient_status: "publish",
           publishAt: today,
@@ -202,7 +202,7 @@ exports.publishUpdate = async (req, res, next) => {
       );
     } else if (ingredient.ingredient_status === "publish") {
       update = await Ingredient.updateOne(
-        { _id: id },
+        { _id: _id },
         {
           ingredient_status: "unpublish",
           publishAt: null,
@@ -210,7 +210,7 @@ exports.publishUpdate = async (req, res, next) => {
       );
     } else if (ingredient.ingredient_status === "unpublish") {
       update = await Ingredient.updateOne(
-        { _id: id },
+        { _id: _id },
         {
           ingredient_status: "publish",
           publishAt: today,
@@ -232,7 +232,6 @@ exports.publishUpdate = async (req, res, next) => {
 
 exports.getIngredientById = async (req, res, next) => {
   const { _id } = req.params;
-  console.log(req.parmas);
   try {
     const ingredient = await Ingredient.findOne({ _id })
       .select("-created_by -updatedAt -__v")

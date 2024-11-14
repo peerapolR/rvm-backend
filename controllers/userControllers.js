@@ -10,7 +10,8 @@ const axios = require("axios");
 
 exports.register = async (req, res, next) => {
   try {
-    const { username, password, firstName, lastName, role } = req.body;
+    const { id, username, password, firstName, lastName, email, tel, role } =
+      req.body;
     //validation
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -25,11 +26,22 @@ exports.register = async (req, res, next) => {
       error.statusCode = 400;
       throw error;
     }
+
+    const existId = await User.findOne({ id });
+    if (existId) {
+      const error = new Error("ID already use!!");
+      error.statusCode = 400;
+      throw error;
+    }
+
     let user = new User();
+    user.id = id;
     user.username = username;
     user.password = await user.encryPassword(password);
     user.firstName = firstName;
     user.lastName = lastName;
+    user.email = email;
+    user.tel = tel;
     user.role = role;
     await user.save();
     return res
@@ -66,7 +78,7 @@ exports.login = async (req, res, next) => {
         id: user._id,
       },
       config.JWT_SECRET,
-      { expiresIn: "10 days" }
+      { expiresIn: "1 day" }
     );
 
     //decode expiresIn
@@ -130,13 +142,13 @@ exports.update = async (req, res, next) => {
   }
 };
 
-// exports.me = async (req, res, next) => {
-//   try {
-//     return res.status(200).json({
-//       ...responseMessage.success,
-//       data: req.user,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+exports.me = async (req, res, next) => {
+  try {
+    return res.status(200).json({
+      ...responseMessage.success,
+      data: req.user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
