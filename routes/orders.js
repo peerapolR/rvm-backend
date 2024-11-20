@@ -8,6 +8,8 @@ router.put("/updateOrder", orderControllers.updateOrder);
 router.delete("/:_id", orderControllers.deleteOrder);
 router.post("/listOrderBySale", orderControllers.listOrderBySale);
 router.get("/listOrderPending", orderControllers.listOrderPending);
+router.get("/listOrderBysaleManager", orderControllers.listOrderBysaleManager);
+router.get("/fetchOrderById/:_id", orderControllers.fetchOrderById);
 router.get("/approveOrder/:_id", orderControllers.approveOrder);
 router.get("/rejectOrder/:_id", orderControllers.rejectOrder);
 router.get("/proposedOrder/:_id", orderControllers.proposedOrder);

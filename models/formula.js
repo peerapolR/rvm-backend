@@ -57,6 +57,9 @@ const schema = new mongoose.Schema(
       default: "draft",
       enum: ["draft", "publish", "cancle", "proposed", "approve"],
     },
+    price: {
+      type: String,
+    },
     approved: {
       type: Number,
       default: 0,

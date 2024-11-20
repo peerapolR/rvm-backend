@@ -25,6 +25,7 @@ exports.addOrder = async (req, res, next) => {
       carton_detail,
       carton_screen,
       carton_price,
+      proposal_name,
       moq,
       price,
       customer_name,
@@ -66,6 +67,7 @@ exports.addOrder = async (req, res, next) => {
       carton_detail,
       carton_screen,
       carton_price,
+      proposal_name,
       moq,
       price,
       customer_name,
@@ -117,6 +119,7 @@ exports.updateOrder = async (req, res, next) => {
       carton_detail,
       carton_screen,
       carton_price,
+      proposal_name,
       moq,
       price,
       customer_name,
@@ -157,6 +160,7 @@ exports.updateOrder = async (req, res, next) => {
         carton_detail,
         carton_screen,
         carton_price,
+        proposal_name,
         moq,
         price,
         customer_name,
@@ -206,8 +210,32 @@ exports.deleteOrder = async (req, res, next) => {
 exports.listOrderBySale = async (req, res, next) => {
   try {
     const { sale_id } = req.body;
+
     const order = await Order.find({ creator_id: sale_id })
-      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .select(" -created_by -updatedAt -__v")
+      .lean();
+
+    if (!order) {
+      const error = new Error("ไม่พบ Order");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return res.status(201).json({
+      ...responseMessage.success,
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.fetchOrderById = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+
+    const order = await Order.find({ _id: _id })
+      .select(" -created_by -updatedAt -__v")
       .lean();
 
     if (!order) {
@@ -228,7 +256,51 @@ exports.listOrderBySale = async (req, res, next) => {
 exports.listOrderPending = async (req, res, next) => {
   try {
     const order = await Order.find({ order_status: "pending" })
-      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .select(" -created_by  -updatedAt -__v")
+      .lean();
+
+    if (!order) {
+      const error = new Error("ไม่พบ Order ที่รอการ Approve");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return res.status(201).json({
+      ...responseMessage.success,
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.listOrderBysaleManager = async (req, res, next) => {
+  try {
+    const order = await Order.find({
+      order_status: { $in: ["approve", "proposed", "reject"] },
+    })
+      .select(" -created_by  -updatedAt -__v")
+      .lean();
+
+    if (!order) {
+      const error = new Error("ไม่พบ Order ที่รอการ Approve");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return res.status(201).json({
+      ...responseMessage.success,
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.listOrderPending = async (req, res, next) => {
+  try {
+    const order = await Order.find({ order_status: "pending" })
+      .select(" -created_by  -updatedAt -__v")
       .lean();
 
     if (!order) {
@@ -259,7 +331,7 @@ exports.approveOrder = async (req, res, next) => {
       throw error;
     }
     const approveOrder = await Order.updateOne(
-      { _id: id },
+      { _id: _id },
       {
         order_status: "approve",
       }
@@ -290,7 +362,7 @@ exports.rejectOrder = async (req, res, next) => {
       throw error;
     }
     const rejectOrder = await Order.updateOne(
-      { _id: id },
+      { _id: _id },
       {
         order_status: "reject",
       }
@@ -321,7 +393,7 @@ exports.proposedOrder = async (req, res, next) => {
       throw error;
     }
     const proposedOrder = await Order.updateOne(
-      { _id: id },
+      { _id: _id },
       {
         order_status: "proposed",
       }
@@ -352,7 +424,7 @@ exports.pendingOrder = async (req, res, next) => {
       throw error;
     }
     const pendingOrder = await Order.updateOne(
-      { _id: id },
+      { _id: _id },
       {
         order_status: "pending",
       }

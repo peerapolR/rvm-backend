@@ -8,10 +8,16 @@ const schema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
+    condition: {
+      type: Schema.Types.Mixed,
+    },
+    standard: {
+      type: String,
+    },
   },
   { toJSON: { virtuals: true }, timestamps: true, collection: "dosage_form" }
 );
 
-const dosage = mongoose.model("dosage", schema);
+const dosage_form = mongoose.model("dosage_form", schema);
 
-module.exports = dosage;
+module.exports = dosage_form;

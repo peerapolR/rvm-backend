@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const Ingredient = require("../models/ingredient");
+const DosageForm = require("../models/dosageForm");
 const config = require("../config/index");
 const responseMessage = require("../utils/responseMessage");
 // const getTodatDate = require("../utils/getTodatDate");
@@ -240,6 +241,61 @@ exports.getIngredientById = async (req, res, next) => {
     return res.status(201).json({
       ...responseMessage.success,
       data: ingredient,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.addDosageData = async (req, res, next) => {
+  try {
+    const { dosage_name, condition, standard } = req.body;
+
+    const existDosage = await DosageForm.findOne({
+      dosage_name: dosage_name,
+    });
+    if (!existDosage) {
+      const error = new Error("ไม่พบ Dosage Form");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const editDosage = await DosageForm.updateOne(
+      { dosage_name: dosage_name },
+      {
+        condition,
+        standard,
+      }
+    );
+    if (editDosage.nModified === 0) {
+      throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+    } else {
+      return res.status(201).json({
+        ...responseMessage.success,
+        data: "ทำรายการเรียบร้อยแล้ว",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getDataByDosage = async (req, res, next) => {
+  try {
+    const { dosage_form } = req.body;
+
+    const existDosage = await DosageForm.findOne({
+      dosage_name: dosage_form,
+    });
+    if (!existDosage) {
+      const error = new Error("ไม่พบ Dosage Form");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return res.status(201).json({
+      ...responseMessage.success,
+      data: existDosage,
     });
   } catch (error) {
     next(error);

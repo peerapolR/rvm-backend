@@ -51,6 +51,7 @@ exports.addFormula = async (req, res, next) => {
       ingredient: ingredient,
       createdBy: createdBy,
       formula_status: formula_status,
+      price: "0.00",
     });
 
     await newFormula.save();
@@ -73,7 +74,7 @@ exports.addFormula = async (req, res, next) => {
 exports.listAllFormula = async (req, res, next) => {
   try {
     const allFormula = await Formula.find()
-      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .select("-_id -created_by -updatedAt -__v")
       .lean();
 
     return res.status(201).json({
@@ -90,11 +91,13 @@ exports.getFormulaByCon = async (req, res, next) => {
     const { product_category, formulation, dosage_form } = req.body;
     const formula = await Formula.find({
       product_category: product_category,
-      formulation: formulation,
+      formulation: { $in: formulation },
       dosage_form: dosage_form,
+      formula_status: "publish",
     })
       .select("-created_by -createdAt -updatedAt -__v")
       .lean();
+
     if (!formula) {
       const error = new Error("ไม่พบสูตรที่ต้องการ");
       error.statusCode = 404;

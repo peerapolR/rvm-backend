@@ -11,4 +11,7 @@ router.put("/publish/:_id", ingredientControllers.publishUpdate);
 router.put("/updateIngredient", ingredientControllers.updateIngredient);
 router.get("/getIngredientById/:_id", ingredientControllers.getIngredientById);
 
+router.post("/addDosageData", ingredientControllers.addDosageData);
+router.post("/getDataByDosage", ingredientControllers.getDataByDosage);
+
 module.exports = router;

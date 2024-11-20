@@ -36,34 +36,38 @@ const schema = new mongoose.Schema(
       type: Schema.Types.Mixed,
     },
     packaging: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     packaging_detail: {
       type: String,
     },
     packaging_price: {
-      type: Number,
+      type: String,
     },
     carton: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     carton_detail: {
       type: String,
     },
     carton_screen: {
-      type: Boolean,
+      type: String,
     },
     carton_price: {
-      type: Number,
+      type: String,
+    },
+    proposal_name: {
+      type: String,
+      required: true,
     },
     moq: {
-      type: Number,
+      type: String,
       required: true,
     },
     price: {
-      type: Number,
+      type: String,
       required: true,
     },
     customer_name: {
@@ -85,10 +89,10 @@ const schema = new mongoose.Schema(
       type: String,
     },
     postal_code: {
-      type: Number,
+      type: String,
     },
     tel: {
-      type: Number,
+      type: String,
     },
     tax_id: {
       type: String,
