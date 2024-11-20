@@ -1,25 +1,18 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-// const corsOptions = {
-//   // origin: [
-//   //   "http",
-//   // ],
-//   origin: "*",
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   methods: ["GET", "POST", "PUT", "DELETE"],
-//   credentials: true,
-//   optionsSuccessStatus: 204,
-//   maxAge: 3600,
-//   exposedHeaders: [
-//     "Access-Control-Allow-Origin",
-//     "Access-Control-Allow-Credentials",
-//     "Content-Disposition",
-//     "X-Suggested-Filename",
-//   ],
-// };
 
 app.use(cors());
+
+// Or configure specific origins
+const corsOptions = {
+  origin: "https://rvm-frontend.vercel.app", // Frontend URL
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed methods
+  credentials: true, // Enable sending cookies with credentials
+};
+
+app.use(cors(corsOptions));
+
 const bodyParser = require("body-parser");
 const urlencoded = bodyParser.urlencoded({ extended: true });
 const jsonParser = bodyParser.json({ limit: "50mb" });
