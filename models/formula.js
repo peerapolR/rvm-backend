@@ -55,7 +55,7 @@ const schema = new mongoose.Schema(
     formula_status: {
       type: String,
       default: "draft",
-      enum: ["draft", "publish", "cancle", "proposed", "approve"],
+      enum: ["draft", "publish", "cancle", "success", "approve"],
     },
     price: {
       type: String,

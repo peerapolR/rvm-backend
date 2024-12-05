@@ -88,7 +88,7 @@ const schema = new mongoose.Schema(
     order_status: {
       type: String,
       default: "draft",
-      enum: ["draft", "pending", "reject", "proposed", "approve"],
+      enum: ["draft", "pending", "reject", "approve", "success", "decline"],
     },
     moq1: {
       type: String,

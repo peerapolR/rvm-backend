@@ -319,7 +319,7 @@ exports.listOrderPending = async (req, res, next) => {
 exports.listOrderBysaleManager = async (req, res, next) => {
   try {
     const order = await Order.find({
-      order_status: { $in: ["approve", "proposed", "reject"] },
+      order_status: { $in: ["approve", "success", "reject", "decline"] },
     })
       .select(" -created_by  -updatedAt -__v")
       .sort({ createdAt: -1 })
@@ -432,14 +432,14 @@ exports.proposedOrder = async (req, res, next) => {
       .lean();
 
     if (!order) {
-      const error = new Error("ไม่พบ Order ที่ต้องการ proposed");
+      const error = new Error("ไม่พบ Order ที่ต้องการ Success");
       error.statusCode = 404;
       throw error;
     }
     const proposedOrder = await Order.updateOne(
       { _id: _id },
       {
-        order_status: "proposed",
+        order_status: "success",
       }
     );
     if (proposedOrder.nModified === 0) {
@@ -447,7 +447,37 @@ exports.proposedOrder = async (req, res, next) => {
     } else {
       res.status(200).json({
         ...responseMessage.success,
-        data: "Proposal has been proposed.",
+        data: "Proposal has been success.",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+exports.declineOrder = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const order = await Order.findOne({ _id })
+      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .lean();
+
+    if (!order) {
+      const error = new Error("ไม่พบ Order ที่ต้องการ Decline");
+      error.statusCode = 404;
+      throw error;
+    }
+    const proposedOrder = await Order.updateOne(
+      { _id: _id },
+      {
+        order_status: "decline",
+      }
+    );
+    if (proposedOrder.nModified === 0) {
+      throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+    } else {
+      res.status(200).json({
+        ...responseMessage.success,
+        data: "Proposal has been Decline.",
       });
     }
   } catch (error) {
