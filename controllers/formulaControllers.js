@@ -75,6 +75,7 @@ exports.listAllFormula = async (req, res, next) => {
   try {
     const allFormula = await Formula.find()
       .select("-_id -created_by -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .lean();
 
     return res.status(201).json({
@@ -116,6 +117,7 @@ exports.listAllFormulation = async (req, res, next) => {
   try {
     const allFormulation = await Formulation.find()
       .select("-_id -created_by -createdAt -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .lean();
 
     return res.status(201).json({

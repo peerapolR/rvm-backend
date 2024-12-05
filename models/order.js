@@ -35,16 +35,6 @@ const schema = new mongoose.Schema(
     ingredient: {
       type: Schema.Types.Mixed,
     },
-    packaging: {
-      type: String,
-      required: true,
-    },
-    packaging_detail: {
-      type: String,
-    },
-    packaging_price: {
-      type: String,
-    },
     carton: {
       type: String,
       required: true,
@@ -59,14 +49,6 @@ const schema = new mongoose.Schema(
       type: String,
     },
     proposal_name: {
-      type: String,
-      required: true,
-    },
-    moq: {
-      type: String,
-      required: true,
-    },
-    price: {
       type: String,
       required: true,
     },
@@ -107,6 +89,53 @@ const schema = new mongoose.Schema(
       type: String,
       default: "draft",
       enum: ["draft", "pending", "reject", "proposed", "approve"],
+    },
+    moq1: {
+      type: String,
+      required: true,
+    },
+    price1: {
+      type: String,
+      required: true,
+    },
+    packaging1: {
+      type: String,
+    },
+    packaging_detail1: {
+      type: String,
+    },
+    packaging_price1: {
+      type: String,
+    },
+    moq2: {
+      type: String,
+    },
+    price2: {
+      type: String,
+    },
+    packaging2: {
+      type: String,
+    },
+    packaging_detail2: {
+      type: String,
+    },
+    packaging_price2: {
+      type: String,
+    },
+    moq3: {
+      type: String,
+    },
+    price3: {
+      type: String,
+    },
+    packaging3: {
+      type: String,
+    },
+    packaging_detail3: {
+      type: String,
+    },
+    packaging_price3: {
+      type: String,
     },
     isActive: {
       type: Boolean,

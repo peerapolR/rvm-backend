@@ -14,5 +14,9 @@ router.get("/approveOrder/:_id", orderControllers.approveOrder);
 router.get("/rejectOrder/:_id", orderControllers.rejectOrder);
 router.get("/proposedOrder/:_id", orderControllers.proposedOrder);
 router.get("/pendingOrder/:_id", orderControllers.pendingOrder);
+router.get(
+  "/getNumToGenOrderId/:order_id",
+  orderControllers.getNumToGenOrderId
+);
 
 module.exports = router;

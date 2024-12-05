@@ -136,6 +136,7 @@ exports.listAllIngredient = async (req, res, next) => {
   try {
     const allIngredient = await Ingredient.find()
       .select("-created_by -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .lean();
 
     return res.status(201).json({

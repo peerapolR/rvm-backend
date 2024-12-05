@@ -18,16 +18,11 @@ exports.addOrder = async (req, res, next) => {
       formular_name,
       master_ingredient,
       ingredient,
-      packaging,
-      packaging_detail,
-      packaging_price,
       carton,
       carton_detail,
       carton_screen,
       carton_price,
       proposal_name,
-      moq,
-      price,
       customer_name,
       proposal_code,
       address,
@@ -40,6 +35,21 @@ exports.addOrder = async (req, res, next) => {
       contact_person,
       creator_id,
       order_status,
+      moq1,
+      price1,
+      packaging1,
+      packaging_detail1,
+      packaging_price1,
+      moq2,
+      price2,
+      packaging2,
+      packaging_detail2,
+      packaging_price2,
+      moq3,
+      price3,
+      packaging3,
+      packaging_detail3,
+      packaging_price3,
     } = req.body;
 
     const existOrder = await Order.findOne({
@@ -60,16 +70,11 @@ exports.addOrder = async (req, res, next) => {
       formular_name,
       master_ingredient,
       ingredient,
-      packaging,
-      packaging_detail,
-      packaging_price,
       carton,
       carton_detail,
       carton_screen,
       carton_price,
       proposal_name,
-      moq,
-      price,
       customer_name,
       proposal_code,
       address,
@@ -82,6 +87,21 @@ exports.addOrder = async (req, res, next) => {
       contact_person,
       creator_id,
       order_status,
+      moq1,
+      price1,
+      packaging1,
+      packaging_detail1,
+      packaging_price1,
+      moq2,
+      price2,
+      packaging2,
+      packaging_detail2,
+      packaging_price2,
+      moq3,
+      price3,
+      packaging3,
+      packaging_detail3,
+      packaging_price3,
     });
 
     await newOrder.save();
@@ -112,16 +132,11 @@ exports.updateOrder = async (req, res, next) => {
       formular_name,
       master_ingredient,
       ingredient,
-      packaging,
-      packaging_detail,
-      packaging_price,
       carton,
       carton_detail,
       carton_screen,
       carton_price,
       proposal_name,
-      moq,
-      price,
       customer_name,
       proposal_code,
       address,
@@ -134,6 +149,21 @@ exports.updateOrder = async (req, res, next) => {
       contact_person,
       creator_id,
       order_status,
+      moq1,
+      price1,
+      packaging1,
+      packaging_detail1,
+      packaging_price1,
+      moq2,
+      price2,
+      packaging2,
+      packaging_detail2,
+      packaging_price2,
+      moq3,
+      price3,
+      packaging3,
+      packaging_detail3,
+      packaging_price3,
     } = req.body;
 
     const existOrder = await Order.findOne({ _id: id });
@@ -153,16 +183,11 @@ exports.updateOrder = async (req, res, next) => {
         formular_name,
         master_ingredient,
         ingredient,
-        packaging,
-        packaging_detail,
-        packaging_price,
         carton,
         carton_detail,
         carton_screen,
         carton_price,
         proposal_name,
-        moq,
-        price,
         customer_name,
         proposal_code,
         address,
@@ -175,6 +200,21 @@ exports.updateOrder = async (req, res, next) => {
         contact_person,
         creator_id,
         order_status,
+        moq1,
+        price1,
+        packaging1,
+        packaging_detail1,
+        packaging_price1,
+        moq2,
+        price2,
+        packaging2,
+        packaging_detail2,
+        packaging_price2,
+        moq3,
+        price3,
+        packaging3,
+        packaging_detail3,
+        packaging_price3,
       }
     );
     if (editorder.nModified === 0) {
@@ -213,6 +253,7 @@ exports.listOrderBySale = async (req, res, next) => {
 
     const order = await Order.find({ creator_id: sale_id })
       .select(" -created_by -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .lean();
 
     if (!order) {
@@ -257,6 +298,7 @@ exports.listOrderPending = async (req, res, next) => {
   try {
     const order = await Order.find({ order_status: "pending" })
       .select(" -created_by  -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .lean();
 
     if (!order) {
@@ -280,6 +322,7 @@ exports.listOrderBysaleManager = async (req, res, next) => {
       order_status: { $in: ["approve", "proposed", "reject"] },
     })
       .select(" -created_by  -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .lean();
 
     if (!order) {
@@ -301,6 +344,7 @@ exports.listOrderPending = async (req, res, next) => {
   try {
     const order = await Order.find({ order_status: "pending" })
       .select(" -created_by  -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .lean();
 
     if (!order) {
@@ -437,6 +481,25 @@ exports.pendingOrder = async (req, res, next) => {
         data: "Proposal has been pending.",
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getNumToGenOrderId = async (req, res, next) => {
+  try {
+    const { order_id } = req.params;
+
+    const orders = await Order.find({
+      order_id: { $regex: new RegExp(`^${order_id}`) },
+    })
+      .select("_id order_id")
+      .lean();
+
+    return res.status(201).json({
+      ...responseMessage.success,
+      data: orders.length,
+    });
   } catch (error) {
     next(error);
   }
