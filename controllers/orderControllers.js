@@ -50,6 +50,7 @@ exports.addOrder = async (req, res, next) => {
       packaging3,
       packaging_detail3,
       packaging_price3,
+      prePrice,
     } = req.body;
 
     const existOrder = await Order.findOne({
@@ -102,6 +103,7 @@ exports.addOrder = async (req, res, next) => {
       packaging3,
       packaging_detail3,
       packaging_price3,
+      prePrice,
     });
 
     await newOrder.save();
@@ -164,6 +166,7 @@ exports.updateOrder = async (req, res, next) => {
       packaging3,
       packaging_detail3,
       packaging_price3,
+      prePrice,
     } = req.body;
 
     const existOrder = await Order.findOne({ _id: id });
@@ -215,6 +218,7 @@ exports.updateOrder = async (req, res, next) => {
         packaging3,
         packaging_detail3,
         packaging_price3,
+        prePrice,
       }
     );
     if (editorder.nModified === 0) {

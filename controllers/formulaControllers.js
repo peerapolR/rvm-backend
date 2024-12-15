@@ -21,6 +21,7 @@ exports.addFormula = async (req, res, next) => {
       ingredient,
       createdBy,
       formula_status,
+      price,
     } = req.body;
 
     const existFormula = await Formula.findOne({
@@ -51,7 +52,7 @@ exports.addFormula = async (req, res, next) => {
       ingredient: ingredient,
       createdBy: createdBy,
       formula_status: formula_status,
-      price: "0.00",
+      price: price,
     });
 
     await newFormula.save();

@@ -137,6 +137,9 @@ const schema = new mongoose.Schema(
     packaging_price3: {
       type: String,
     },
+    prePrice: {
+      type: String,
+    },
     isActive: {
       type: Boolean,
       default: true,
