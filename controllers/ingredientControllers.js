@@ -5,7 +5,7 @@ const DosageForm = require("../models/dosageForm");
 const config = require("../config/index");
 const responseMessage = require("../utils/responseMessage");
 // const getTodatDate = require("../utils/getTodatDate");
-// const s3url = require("../utils/content");
+const s3url = require("../utils/content");
 // const logger = require("../utils/logger");
 
 exports.addIngredient = async (req, res, next) => {
@@ -39,6 +39,17 @@ exports.addIngredient = async (req, res, next) => {
       throw error;
     }
 
+    let getImage;
+    if (req.file) {
+      const { path, mimetype, filename } = req.file;
+
+      const imgLocation = `${filename}`;
+      getImage = imgLocation;
+      await s3url.uploadFileFromLocal(path, mimetype, imgLocation);
+    } else {
+      getImage = "";
+    }
+
     let newIngredient = new Ingredient({
       product_category,
       ingredient_name: ingredient_name,
@@ -54,7 +65,7 @@ exports.addIngredient = async (req, res, next) => {
       ex_health_benefits: ex_health_benefits,
       formulation: formulation,
       incomp_Ingredient: incomp_Ingredient,
-      ingredient_image: ingredient_image,
+      ingredient_image: getImage,
       createdBy: createdBy,
       ingredient_status: ingredient_status,
     });
@@ -238,10 +249,20 @@ exports.getIngredientById = async (req, res, next) => {
     const ingredient = await Ingredient.findOne({ _id })
       .select("-created_by -updatedAt -__v")
       .lean();
+    let paramSend;
+    if (ingredient.ingredient_image) {
+      const getImage = await s3url.getImageUrl(ingredient.ingredient_image);
+      paramSend = {
+        ...ingredient,
+        ingredient_image: getImage != "" ? getImage.s3url : "",
+      };
+    } else {
+      paramSend = ingredient;
+    }
 
     return res.status(201).json({
       ...responseMessage.success,
-      data: ingredient,
+      data: paramSend,
     });
   } catch (error) {
     next(error);
