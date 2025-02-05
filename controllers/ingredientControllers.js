@@ -109,6 +109,16 @@ exports.updateIngredient = async (req, res, next) => {
       throw error;
     }
 
+    let getImage;
+    if (req.file) {
+      const { path, mimetype, filename } = req.file;
+
+      const imgLocation = `${filename}`;
+      getImage = imgLocation;
+      await s3url.uploadFileFromLocal(path, mimetype, imgLocation);
+    } else {
+      getImage = "";
+    }
     const editIngredient = await Ingredient.updateOne(
       { _id: _id },
       {
@@ -125,7 +135,7 @@ exports.updateIngredient = async (req, res, next) => {
         ex_health_benefits,
         formulation,
         incomp_Ingredient,
-        ingredient_image,
+        ingredient_image: getImage,
         createdBy,
         ingredient_status,
       }

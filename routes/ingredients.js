@@ -25,7 +25,11 @@ router.get("/listAllIngredient", ingredientControllers.listAllIngredient);
 router.get("/listIngredientToUse", ingredientControllers.listIngredientToUse);
 router.delete("/:_id", ingredientControllers.deleteIngredient);
 router.put("/publish/:_id", ingredientControllers.publishUpdate);
-router.put("/updateIngredient", ingredientControllers.updateIngredient);
+router.put(
+  "/updateIngredient",
+  upload.single("ingredient_image"),
+  ingredientControllers.updateIngredient
+);
 router.get("/getIngredientById/:_id", ingredientControllers.getIngredientById);
 
 router.post("/addDosageData", ingredientControllers.addDosageData);

@@ -52,7 +52,7 @@ const schema = new mongoose.Schema(
       type: String,
     },
     formulation: {
-      type: Schema.Types.Mixed,
+      type: Array,
     },
     incomp_Ingredient: {
       type: Schema.Types.Mixed,
