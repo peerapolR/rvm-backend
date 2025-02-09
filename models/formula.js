@@ -26,30 +26,24 @@ const schema = new mongoose.Schema(
     },
     formula_type: {
       type: String,
-      required: true,
       trim: true,
       enum: ["prototype", "concept", "sale-custom"],
     },
     formulation: {
       type: Array,
-      required: true,
     },
     dosage_form: {
       type: String,
-      required: true,
       trim: true,
     },
     master_ingredient: {
       type: Array,
-      required: true,
     },
     ingredient: {
       type: Array,
-      required: true,
     },
     createdBy: {
       type: String,
-      required: true,
       trim: true,
     },
     formula_status: {
