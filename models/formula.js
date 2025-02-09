@@ -31,7 +31,7 @@ const schema = new mongoose.Schema(
       enum: ["prototype", "concept", "sale-custom"],
     },
     formulation: {
-      type: Schema.Types.Mixed,
+      type: Array,
       required: true,
     },
     dosage_form: {
@@ -40,11 +40,11 @@ const schema = new mongoose.Schema(
       trim: true,
     },
     master_ingredient: {
-      type: Schema.Types.Mixed,
+      type: Array,
       required: true,
     },
     ingredient: {
-      type: Schema.Types.Mixed,
+      type: Array,
       required: true,
     },
     createdBy: {
@@ -55,7 +55,7 @@ const schema = new mongoose.Schema(
     formula_status: {
       type: String,
       default: "draft",
-      enum: ["draft", "publish", "cancle", "success", "approve"],
+      enum: ["draft", "publish", "cancle", "proposed", "approve"],
     },
     price: {
       type: String,

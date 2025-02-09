@@ -16,11 +16,9 @@ const schema = new mongoose.Schema(
     },
     dose_min: {
       type: String,
-      required: true,
     },
     dose_max: {
       type: String,
-      required: true,
     },
     dose_clinical: {
       type: String,
@@ -31,22 +29,18 @@ const schema = new mongoose.Schema(
     },
     price_min: {
       type: String,
-      required: true,
     },
     price_max: {
       type: String,
-      required: true,
     },
     chemical_comp: {
       type: String,
-      required: true,
     },
     cert: {
       type: String,
     },
     health_benefits: {
       type: String,
-      required: true,
     },
     ex_health_benefits: {
       type: String,
@@ -60,7 +54,6 @@ const schema = new mongoose.Schema(
     ingredient_image: { type: String },
     createdBy: {
       type: String,
-      required: true,
       trim: true,
     },
     ingredient_status: {

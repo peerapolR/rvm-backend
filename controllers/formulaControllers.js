@@ -75,7 +75,7 @@ exports.addFormula = async (req, res, next) => {
 exports.listAllFormula = async (req, res, next) => {
   try {
     const allFormula = await Formula.find()
-      .select("-_id -created_by -updatedAt -__v")
+      .select("-created_by -updatedAt -__v")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -108,6 +108,26 @@ exports.getFormulaByCon = async (req, res, next) => {
     return res.status(201).json({
       ...responseMessage.success,
       data: formula,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getFormulaById = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+
+    const existFormula = await Formula.findOne({ _id: _id });
+    if (!existFormula) {
+      const error = new Error("ไม่พบสูตร");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return res.status(201).json({
+      ...responseMessage.success,
+      data: existFormula,
     });
   } catch (error) {
     next(error);
@@ -202,6 +222,54 @@ exports.updateFormula = async (req, res, next) => {
       return res.status(200).json({
         ...responseMessage.success,
         data: "Formula updated",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.unPubFormula = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const formula = await Formula.findOne({ _id })
+      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .lean();
+
+    if (!formula) {
+      const error = new Error("ไม่พบ formula ที่ต้องการแก้ไข");
+      error.statusCode = 404;
+      throw error;
+    }
+    const unPubFor = await Formula.updateOne(
+      { _id: _id },
+      {
+        formula_status: "draft",
+      }
+    );
+    if (unPubFor.nModified === 0) {
+      throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+    } else {
+      res.status(200).json({
+        ...responseMessage.success,
+        data: "Formula has been draft.",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteFormula = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const ingredient = await Formula.deleteOne({ _id });
+    if (ingredient.deletedCount === 0) {
+      throw new Error("ไม่สามารถลบข้อมูลได้");
+    } else {
+      res.status(200).json({
+        ...responseMessage.success,
+        data: `ลบข้อมูลเรียบร้อยแล้ว`,
       });
     }
   } catch (error) {
