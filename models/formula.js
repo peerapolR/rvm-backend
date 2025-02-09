@@ -27,8 +27,7 @@ const schema = new mongoose.Schema(
     formula_type: {
       type: String,
       trim: true,
-      default: "prototype",
-      enum: ["prototype", "concept", "sale-custom"],
+      // enum: ["prototype", "concept", "sale-custom"],
     },
     formulation: {
       type: Array,
