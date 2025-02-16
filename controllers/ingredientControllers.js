@@ -172,7 +172,8 @@ exports.listAllIngredient = async (req, res, next) => {
 exports.listIngredientToUse = async (req, res, next) => {
   try {
     const ingredients = await Ingredient.find()
-      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .select("-__v")
+      .sort({ createdAt: -1 })
       .where("ingredient_status")
       .equals("publish")
       .lean();

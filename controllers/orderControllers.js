@@ -4,7 +4,7 @@ const Order = require("../models/order");
 const config = require("../config/index");
 const responseMessage = require("../utils/responseMessage");
 const getTodayForCode = require("../utils/getTodayForCode");
-// const s3url = require("../utils/content");
+const s3url = require("../utils/content");
 // const logger = require("../utils/logger");
 
 exports.addOrder = async (req, res, next) => {
@@ -52,14 +52,15 @@ exports.addOrder = async (req, res, next) => {
       packaging_price3,
       prePrice,
     } = req.body;
-
-    const existOrder = await Order.findOne({
-      order_id: order_id,
-    });
-    if (existOrder) {
-      const error = new Error("ไม่สามารถสร้าง Order ที่มี id ซ้ำกันได้");
-      error.statusCode = 404;
-      throw error;
+    if (order_id && order_id !== "") {
+      const existOrder = await Order.findOne({
+        order_id: order_id,
+      });
+      if (existOrder) {
+        const error = new Error("ไม่สามารถสร้าง Order ที่มี id ซ้ำกันได้");
+        error.statusCode = 404;
+        throw error;
+      }
     }
 
     let newOrder = new Order({
@@ -126,7 +127,7 @@ exports.addOrder = async (req, res, next) => {
 exports.updateOrder = async (req, res, next) => {
   try {
     const {
-      id,
+      _id,
       product_category,
       formulation,
       dosage_form,
@@ -169,7 +170,7 @@ exports.updateOrder = async (req, res, next) => {
       prePrice,
     } = req.body;
 
-    const existOrder = await Order.findOne({ _id: id });
+    const existOrder = await Order.findOne({ _id: _id });
     if (!existOrder) {
       const error = new Error("ไม่พบ Order Id นี้");
       error.statusCode = 404;
@@ -177,7 +178,7 @@ exports.updateOrder = async (req, res, next) => {
     }
 
     const editorder = await Order.updateOne(
-      { _id: id },
+      { _id: _id },
       {
         product_category,
         formulation,
@@ -287,6 +288,42 @@ exports.fetchOrderById = async (req, res, next) => {
       const error = new Error("ไม่พบ Order");
       error.statusCode = 404;
       throw error;
+    }
+
+    if (order[0].master_ingredient && order[0].master_ingredient?.length > 0) {
+      order[0].master_ingredient = await Promise.all(
+        order[0].master_ingredient.map(async (ingredient) => {
+          if (ingredient.ingredient_image) {
+            // Only update if ingredient_image exists
+            const updatedImageUrl = await s3url.getImageUrl(
+              ingredient.ingredient_image
+            );
+            return {
+              ...ingredient,
+              ingredient_image: updatedImageUrl.s3url,
+            };
+          }
+          return ingredient; // Return ingredient as is if no ingredient_image
+        })
+      );
+    }
+
+    if (order[0].ingredient && order[0].ingredient?.length > 0) {
+      order[0].ingredient = await Promise.all(
+        order[0].ingredient.map(async (ingredient) => {
+          if (ingredient.ingredient_image) {
+            // Only update if ingredient_image exists
+            const updatedImageUrl = await s3url.getImageUrl(
+              ingredient.ingredient_image
+            );
+            return {
+              ...ingredient,
+              ingredient_image: updatedImageUrl.s3url,
+            };
+          }
+          return ingredient; // Return ingredient as is if no ingredient_image
+        })
+      );
     }
 
     return res.status(201).json({

@@ -9,7 +9,7 @@ const schema = new mongoose.Schema(
       unique: true,
     },
     condition: {
-      type: Schema.Types.Mixed,
+      type: Array,
     },
     standard: {
       type: String,

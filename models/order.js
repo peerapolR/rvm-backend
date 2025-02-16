@@ -4,7 +4,6 @@ const schema = new mongoose.Schema(
   {
     order_id: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
     },
@@ -15,19 +14,16 @@ const schema = new mongoose.Schema(
       enum: ["supplement", "skincare", "cosmetic"],
     },
     formulation: {
-      type: Schema.Types.Mixed,
-      required: true,
+      type: Array,
     },
     dosage_form: {
       type: String,
-      require: true,
     },
     formula: {
       type: String,
     },
     formular_name: {
       type: String,
-      required: true,
     },
     master_ingredient: {
       type: Schema.Types.Mixed,
@@ -37,7 +33,6 @@ const schema = new mongoose.Schema(
     },
     carton: {
       type: String,
-      required: true,
     },
     carton_detail: {
       type: String,
@@ -50,7 +45,6 @@ const schema = new mongoose.Schema(
     },
     proposal_name: {
       type: String,
-      required: true,
     },
     customer_name: {
       type: String,
@@ -92,11 +86,9 @@ const schema = new mongoose.Schema(
     },
     moq1: {
       type: String,
-      required: true,
     },
     price1: {
       type: String,
-      required: true,
     },
     packaging1: {
       type: String,

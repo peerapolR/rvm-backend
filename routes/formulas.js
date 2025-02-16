@@ -12,6 +12,7 @@ router.post("/getFormulaByCon", formulaControllers.getFormulaByCon);
 router.put("/updateFormula", formulaControllers.updateFormula);
 router.get("/getFormulaById/:_id", formulaControllers.getFormulaById);
 router.get("/unPubFormula/:_id", formulaControllers.unPubFormula);
+router.get("/useFormula/:name", formulaControllers.useFormula);
 router.delete("/:_id", formulaControllers.deleteFormula);
 
 module.exports = router;

@@ -260,6 +260,37 @@ exports.unPubFormula = async (req, res, next) => {
   }
 };
 
+exports.useFormula = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const formula = await Formula.findOne({ formula_name: name })
+      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .lean();
+
+    if (!formula) {
+      const error = new Error("ไม่พบ formula ที่ต้องการแก้ไข");
+      error.statusCode = 404;
+      throw error;
+    }
+    const useFor = await Formula.updateOne(
+      { formula_name: name },
+      {
+        formula_status: "proposed",
+      }
+    );
+    if (useFor.nModified === 0) {
+      throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+    } else {
+      res.status(200).json({
+        ...responseMessage.success,
+        data: "Formula has been use.",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.deleteFormula = async (req, res, next) => {
   try {
     const { _id } = req.params;
