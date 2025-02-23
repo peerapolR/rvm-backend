@@ -56,9 +56,9 @@ exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
     //check email exist system
-    const user = await User.findOne({ username: username }).select(
-      "-createdAt -updatedAt -__v"
-    );
+    const user = await User.findOne({
+      username: username.toLowerCase(),
+    }).select("-createdAt -updatedAt -__v");
     if (!user) {
       const error = new Error("Username Not Found");
       error.statusCode = 404;
