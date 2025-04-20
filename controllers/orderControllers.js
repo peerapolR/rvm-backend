@@ -18,6 +18,8 @@ exports.addOrder = async (req, res, next) => {
       formular_name,
       master_ingredient,
       ingredient,
+      begin_master_ingredient,
+      begin_ingredient,
       carton,
       carton_detail,
       carton_screen,
@@ -51,6 +53,7 @@ exports.addOrder = async (req, res, next) => {
       packaging_detail3,
       packaging_price3,
       prePrice,
+      begin_prePrice,
     } = req.body;
     if (order_id && order_id !== "") {
       const existOrder = await Order.findOne({
@@ -72,6 +75,8 @@ exports.addOrder = async (req, res, next) => {
       formular_name,
       master_ingredient,
       ingredient,
+      begin_master_ingredient,
+      begin_ingredient,
       carton,
       carton_detail,
       carton_screen,
@@ -105,6 +110,7 @@ exports.addOrder = async (req, res, next) => {
       packaging_detail3,
       packaging_price3,
       prePrice,
+      begin_prePrice,
     });
 
     await newOrder.save();
@@ -135,6 +141,8 @@ exports.updateOrder = async (req, res, next) => {
       formular_name,
       master_ingredient,
       ingredient,
+      begin_master_ingredient,
+      begin_ingredient,
       carton,
       carton_detail,
       carton_screen,
@@ -168,6 +176,7 @@ exports.updateOrder = async (req, res, next) => {
       packaging_detail3,
       packaging_price3,
       prePrice,
+      begin_prePrice,
     } = req.body;
 
     const existOrder = await Order.findOne({ _id: _id });
@@ -187,6 +196,8 @@ exports.updateOrder = async (req, res, next) => {
         formular_name,
         master_ingredient,
         ingredient,
+        begin_master_ingredient,
+        begin_ingredient,
         carton,
         carton_detail,
         carton_screen,
@@ -220,6 +231,7 @@ exports.updateOrder = async (req, res, next) => {
         packaging_detail3,
         packaging_price3,
         prePrice,
+        begin_prePrice,
       }
     );
     if (editorder.nModified === 0) {

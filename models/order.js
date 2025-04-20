@@ -26,10 +26,16 @@ const schema = new mongoose.Schema(
       type: String,
     },
     master_ingredient: {
-      type: Schema.Types.Mixed,
+      type: Array,
     },
     ingredient: {
-      type: Schema.Types.Mixed,
+      type: Array,
+    },
+    begin_master_ingredient: {
+      type: Array,
+    },
+    begin_ingredient: {
+      type: Array,
     },
     carton: {
       type: String,
@@ -130,6 +136,9 @@ const schema = new mongoose.Schema(
       type: String,
     },
     prePrice: {
+      type: String,
+    },
+    begin_prePrice: {
       type: String,
     },
     isActive: {
