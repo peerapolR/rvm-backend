@@ -95,6 +95,7 @@ exports.getFormulaByCon = async (req, res, next) => {
       product_category: product_category,
       formulation: { $in: formulation },
       dosage_form: dosage_form,
+      formula_type: "prototype",
       formula_status: "publish",
     })
       .select("-created_by -createdAt -updatedAt -__v")

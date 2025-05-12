@@ -247,6 +247,51 @@ exports.updateOrder = async (req, res, next) => {
   }
 };
 
+exports.updateVerifyOrder = async (req, res, next) => {
+  try {
+    const {
+      _id,
+      master_ingredient,
+      ingredient,
+      price1,
+      price2,
+      price3,
+      prePrice,
+      order_status,
+    } = req.body;
+
+    const existOrder = await Order.findOne({ _id: _id });
+    if (!existOrder) {
+      const error = new Error("ไม่พบ Order Id นี้");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const editorder = await Order.updateOne(
+      { _id: _id },
+      {
+        master_ingredient,
+        ingredient,
+        price1,
+        price2,
+        price3,
+        prePrice,
+        order_status,
+      }
+    );
+    if (editorder.nModified === 0) {
+      throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+    } else {
+      res.status(200).json({
+        ...responseMessage.success,
+        data: "Order updated",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.deleteOrder = async (req, res, next) => {
   try {
     const { _id } = req.params;
@@ -369,11 +414,9 @@ exports.listOrderPending = async (req, res, next) => {
   }
 };
 
-exports.listOrderBysaleManager = async (req, res, next) => {
+exports.listOrderVerify = async (req, res, next) => {
   try {
-    const order = await Order.find({
-      order_status: { $in: ["approve", "success", "reject", "decline"] },
-    })
+    const order = await Order.find({ order_status: "verify" })
       .select(" -created_by  -updatedAt -__v")
       .sort({ createdAt: -1 })
       .lean();
@@ -393,9 +436,11 @@ exports.listOrderBysaleManager = async (req, res, next) => {
   }
 };
 
-exports.listOrderPending = async (req, res, next) => {
+exports.listOrderBysaleManager = async (req, res, next) => {
   try {
-    const order = await Order.find({ order_status: "pending" })
+    const order = await Order.find({
+      order_status: { $in: ["approve", "success", "reject", "decline"] },
+    })
       .select(" -created_by  -updatedAt -__v")
       .sort({ createdAt: -1 })
       .lean();
@@ -439,6 +484,37 @@ exports.approveOrder = async (req, res, next) => {
       res.status(200).json({
         ...responseMessage.success,
         data: "Proposal has been approved.",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.pdVerifyOrder = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const order = await Order.findOne({ _id })
+      .select("-_id -created_by -createdAt -updatedAt -__v")
+      .lean();
+
+    if (!order) {
+      const error = new Error("ไม่พบ Order ที่ต้องการ Approve");
+      error.statusCode = 404;
+      throw error;
+    }
+    const pdVerifyOrder = await Order.updateOne(
+      { _id: _id },
+      {
+        order_status: "pending",
+      }
+    );
+    if (pdVerifyOrder.nModified === 0) {
+      throw new Error("ไม่สามารถแก้ไขข้อมูลได้");
+    } else {
+      res.status(200).json({
+        ...responseMessage.success,
+        data: "Proposal has been verified.",
       });
     }
   } catch (error) {

@@ -5,12 +5,15 @@ const orderControllers = require("../controllers/orderControllers");
 
 router.post("/addOrder", orderControllers.addOrder);
 router.put("/updateOrder", orderControllers.updateOrder);
+router.put("/updateVerifyOrder", orderControllers.updateVerifyOrder);
 router.delete("/:_id", orderControllers.deleteOrder);
 router.post("/listOrderBySale", orderControllers.listOrderBySale);
 router.get("/listOrderPending", orderControllers.listOrderPending);
+router.get("/listOrderVerify", orderControllers.listOrderVerify);
 router.get("/listOrderBysaleManager", orderControllers.listOrderBysaleManager);
 router.get("/fetchOrderById/:_id", orderControllers.fetchOrderById);
 router.get("/approveOrder/:_id", orderControllers.approveOrder);
+router.get("/pdVerifyOrder/:_id", orderControllers.pdVerifyOrder);
 router.get("/rejectOrder/:_id", orderControllers.rejectOrder);
 router.get("/proposedOrder/:_id", orderControllers.proposedOrder);
 router.get("/declineOrder/:_id", orderControllers.declineOrder);
