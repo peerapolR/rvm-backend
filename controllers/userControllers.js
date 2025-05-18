@@ -152,3 +152,144 @@ exports.me = async (req, res, next) => {
     next(error);
   }
 };
+
+// Tong created since this
+
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find() //get all users
+      .select('firstName lastName role')
+      .exec();
+    
+    return res.status(200).json({
+      ...responseMessage.success,
+      data: users,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+exports.getUserById = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const user = await User.findOne({ _id: id }) //find document where _id(mongodb field) equals to id
+      .select("firstName lastName tel email role")
+      .exec();
+    
+    if (!user) {
+      const error = new Error("User is not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return res.status(200).json({
+      ...responseMessage.success,
+      data: user,
+    });
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const defaultPassword = "123456"
+    const user = await User.findOne({ _id: id });
+
+    if (!user) {
+      const error = new Error("User is not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    user.password = await user.encryPassword(defaultPassword)
+    await user.save();
+
+    const isPasswordValid = await user.checkPassword(defaultPassword);
+    if (!isPasswordValid) {
+      const error = new Error(
+        "Password reset failed - hash verification error"
+      );
+      error.statusCode = 500;
+      throw error;
+    }
+
+    return res.status(200).json({
+      ...responseMessage.success,
+      message: "Password has been reset to 123456"
+    });
+    
+  } catch (error){
+    next(error)
+  }
+}
+
+exports.updatePassword = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { newPassword, confirmPassword } = req.body;
+
+    const user = await User.findOne({ _id: id });
+    if (!user) {
+      const error = new Error("User is not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (newPassword !== confirmPassword) {
+      const error = new Error("New password and confirm password do not match");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (!newPassword || newPassword.length < 5) {
+      const error = new Error("Password must be at least 5 characters");
+      error.statusCode = 422;
+      throw error;
+    }
+
+    user.password = await user.encryPassword(newPassword);
+    await user.save();
+
+    const isPasswordValid = await user.checkPassword(newPassword);
+    if (!isPasswordValid) {
+      const error = new Error(
+        "Password update failed - hash verification error"
+      );
+      error.statusCode = 500;
+      throw error;
+    }
+
+    return res.status(200).json({
+      ...responseMessage.success,
+      message: "Password is updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteUserById = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const user = await User.findOne({ _id: id })
+    
+    if (!user) {
+      const error = new Error("User is not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    
+    await User.deleteOne({ _id: id });
+
+    return res.status(200).json({
+      ...responseMessage.success,
+      message: "User is deleted successfully"
+    });
+  } catch (error) {
+    next(error)
+  }
+}

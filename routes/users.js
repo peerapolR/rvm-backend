@@ -20,6 +20,13 @@ router.post(
   ],
   userController.register
 );
+
+router.get("/getAllUsers", userController.getAllUsers); //ทำได้เลย
+router.get("/getUserById/:id", userController.getUserById); //ทำได้เลย
+router.put("/resetPassword/:id", userController.resetPassword);
+router.put("/updatePassword/:id", userController.updatePassword);
+router.delete("/deleteUserById/:id", userController.deleteUserById);
+
 router.post("/login", userController.login);
 router.put("/update/:id", userController.update);
 router.get("/me", [passportJWT.isLogin], userController.me);

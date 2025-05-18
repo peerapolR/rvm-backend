@@ -6,7 +6,8 @@ app.use(cors());
 
 // Or configure specific origins
 const corsOptions = {
-  origin: "https://rvm-frontend.vercel.app", // Frontend URL
+  //origin: "https://rvm-frontend.vercel.app", // Frontend URL
+  origin: "*",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed methods
   credentials: true, // Enable sending cookies with credentials
 };
