@@ -26,7 +26,7 @@ const schema = new mongoose.Schema(
       trim: true,
     },
     tel: {
-      type: Number,
+      type: String,
       required: true,
       trim: true,
       minlength: 10,

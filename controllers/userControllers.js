@@ -10,8 +10,8 @@ const axios = require("axios");
 
 exports.register = async (req, res, next) => {
   try {
-    const { id, username, password, firstName, lastName, email, tel, role } =
-      req.body;
+    const { firstName, lastName, email, tel, role } = req.body;
+
     //validation
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -20,23 +20,28 @@ exports.register = async (req, res, next) => {
       error.validation = errors.array();
       throw error;
     }
-    const existUser = await User.findOne({ username });
-    if (existUser) {
-      const error = new Error("Username already use!!");
-      error.statusCode = 400;
-      throw error;
-    }
+    // const existUser = await User.findOne({ username });
+    // if (existUser) {
+    //   const error = new Error("Username already use!!");
+    //   error.statusCode = 400;
+    //   throw error;
+    // }
+    // const existId = await User.findOne({ id });
+    // if (existId) {
+    //   const error = new Error("ID already use!!");
+    //   error.statusCode = 400;
+    //   throw error;
+    // }
 
-    const existId = await User.findOne({ id });
-    if (existId) {
-      const error = new Error("ID already use!!");
-      error.statusCode = 400;
-      throw error;
-    }
+    const count = await User.countDocuments();
+    const empId = `RVM${count.toString().padStart(4, "0")}`;
+
+    const empUsername = `${lastName.substring(0, 1)}${firstName.toLowerCase()}`;
+    const password = "123456";
 
     let user = new User();
-    user.id = id;
-    user.username = username;
+    user.id = empId;
+    user.username = empUsername;
     user.password = await user.encryPassword(password);
     user.firstName = firstName;
     user.lastName = lastName;
@@ -99,33 +104,37 @@ exports.login = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { username, password, firstName, lastName, role } = req.body;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const error = new Error("format invalid");
-      error.statusCode = 422;
-      error.validation = errors.array();
-      throw error;
-    }
-    const existUser = await User.findOne().where("username").eq(username);
+    const { _id } = req.params;
+    const { firstName, lastName, tel, email, role } = req.body;
+
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //   const error = new Error("format invalid");
+    //   error.statusCode = 422;
+    //   error.validation = errors.array();
+    //   throw error;
+    // }
+
+    const existUser = await User.findOne({ _id: _id });
     if (!existUser) {
       const error = new Error("Username does not exist!!");
       error.statusCode = 401;
       throw error;
     }
-    if (existUser.password === password) {
-      const error = new Error("New password are same with old password!!");
-      error.statusCode = 401;
-      throw error;
-    }
+    // if (existUser.password === password) {
+    //   const error = new Error("New password are same with old password!!");
+    //   error.statusCode = 401;
+    //   throw error;
+    // }
 
     const editUser = await User.updateOne(
-      { _id: id },
+      { _id: _id },
       {
-        password: await existUser.encryPassword(password),
+        // password: await existUser.encryPassword(password),
         firstName,
         lastName,
+        tel,
+        email,
         role,
       }
     );
@@ -158,26 +167,26 @@ exports.me = async (req, res, next) => {
 exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find() //get all users
-      .select('firstName lastName role')
-      .exec();
-    
+      .select("-username -password -__v")
+      .sort({ id: 1 });
+
     return res.status(200).json({
       ...responseMessage.success,
       data: users,
     });
-
   } catch (error) {
     next(error);
   }
-}
+};
 
 exports.getUserById = async (req, res, next) => {
   try {
-    const { id } = req.params
-    const user = await User.findOne({ _id: id }) //find document where _id(mongodb field) equals to id
+    const { _id } = req.params;
+
+    const user = await User.findOne({ _id: _id })
       .select("firstName lastName tel email role")
       .exec();
-    
+
     if (!user) {
       const error = new Error("User is not found");
       error.statusCode = 404;
@@ -189,15 +198,15 @@ exports.getUserById = async (req, res, next) => {
       data: user,
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 exports.resetPassword = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const defaultPassword = "123456"
-    const user = await User.findOne({ _id: id });
+    const { _id } = req.params;
+    const defaultPassword = "123456";
+    const user = await User.findOne({ _id: _id });
 
     if (!user) {
       const error = new Error("User is not found");
@@ -205,7 +214,7 @@ exports.resetPassword = async (req, res, next) => {
       throw error;
     }
 
-    user.password = await user.encryPassword(defaultPassword)
+    user.password = await user.encryPassword(defaultPassword);
     await user.save();
 
     const isPasswordValid = await user.checkPassword(defaultPassword);
@@ -219,42 +228,48 @@ exports.resetPassword = async (req, res, next) => {
 
     return res.status(200).json({
       ...responseMessage.success,
-      message: "Password has been reset to 123456"
+      message: "Password has been reset to 123456",
     });
-    
-  } catch (error){
-    next(error)
+  } catch (error) {
+    next(error);
   }
-}
+};
 
 exports.updatePassword = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { newPassword, confirmPassword } = req.body;
+    const { _id } = req.params;
+    const { current_password, new_password, confirm_password } = req.body;
 
-    const user = await User.findOne({ _id: id });
+    const user = await User.findOne({ _id: _id });
     if (!user) {
       const error = new Error("User is not found");
       error.statusCode = 404;
       throw error;
     }
 
-    if (newPassword !== confirmPassword) {
+    const isValid = await user.checkPassword(current_password);
+    if (!isValid) {
+      const error = new Error("Password Invalid");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (new_password !== confirm_password) {
       const error = new Error("New password and confirm password do not match");
       error.statusCode = 400;
       throw error;
     }
 
-    if (!newPassword || newPassword.length < 5) {
+    if (!new_password || new_password.length < 5) {
       const error = new Error("Password must be at least 5 characters");
       error.statusCode = 422;
       throw error;
     }
 
-    user.password = await user.encryPassword(newPassword);
+    user.password = await user.encryPassword(new_password);
     await user.save();
 
-    const isPasswordValid = await user.checkPassword(newPassword);
+    const isPasswordValid = await user.checkPassword(new_password);
     if (!isPasswordValid) {
       const error = new Error(
         "Password update failed - hash verification error"
@@ -274,22 +289,22 @@ exports.updatePassword = async (req, res, next) => {
 
 exports.deleteUserById = async (req, res, next) => {
   try {
-    const { id } = req.params
-    const user = await User.findOne({ _id: id })
-    
+    const { _id } = req.params;
+    const user = await User.findOne({ _id: _id });
+
     if (!user) {
       const error = new Error("User is not found");
       error.statusCode = 404;
       throw error;
     }
-    
+
     await User.deleteOne({ _id: id });
 
     return res.status(200).json({
       ...responseMessage.success,
-      message: "User is deleted successfully"
+      message: "User is deleted successfully",
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
